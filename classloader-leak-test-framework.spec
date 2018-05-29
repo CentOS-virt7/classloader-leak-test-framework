@@ -1,6 +1,6 @@
 Name:		classloader-leak-test-framework
 Version:	1.1.1
-Release:	4%{?dist}
+Release:	5%{?dist}
 Summary:	Detection and verification of Java ClassLoader leaks
 License:	ASL 2.0
 URL:		https://github.com/mjiderhamn/classloader-leak-prevention/tree/master/%{name}
@@ -13,9 +13,11 @@ BuildRequires:	maven-local
 BuildRequires:	mvn(junit:junit)
 BuildRequires:	mvn(org.apache.bcel:bcel)
 # test dependencies
+%if ! 0%{?centos}
 BuildRequires:	mvn(javax.el:el-api)
 BuildRequires:	mvn(com.sun.faces:jsf-api)
 BuildRequires:	mvn(com.sun.faces:jsf-impl)
+%endif
 
 %description
 Stand-alone test framework for detecting and/or verifying the existence or
@@ -35,7 +37,11 @@ rm -r classloader-leak-prevention
 cp -r %{name}/* .
 
 %build
+%if 0%{?centos}
+%mvn_build -f
+%else
 %mvn_build
+%endif
 
 %install
 %mvn_install
@@ -48,6 +54,10 @@ cp -r %{name}/* .
 %license LICENSE.txt
 
 %changelog
+* Mon May 28 2018 Sandro Bonazzola <sbonazzo@redhat.com> - 1.1.1-5
+- Skip tests and drop tests deps on CentOS for CentOS Virt SIG since we have
+  no man power for maintaining all the test dependency tree
+
 * Wed Feb 07 2018 Fedora Release Engineering <releng@fedoraproject.org> - 1.1.1-4
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_28_Mass_Rebuild
 
